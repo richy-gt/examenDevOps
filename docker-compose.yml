@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: db_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-udb_user", "-pdb_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ventas-backend:
+    build:
+      context: ./back-ventas-springboot/api-rest-ventas
+      dockerfile: Dockerfile
+    container_name: ventas-backend
+    restart: always
+    environment:
+      DB_ENDPOINT: db
+      DB_PORT: 3306
+      DB_NAME: ventas_db
+      DB_USERNAME: db_user
+      DB_PASSWORD: db_password
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  despachos-backend:
+    build:
+      context: ./back-bespachos-springboot/api-rest-despacho
+      dockerfile: Dockerfile
+    container_name: despachos-backend
+    restart: always
+    environment:
+      DB_ENDPOINT: db
+      DB_PORT: 3306
+      DB_NAME: despachos_db
+      DB_USERNAME: db_user
+      DB_PASSWORD: db_password
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./front-despacho
+      dockerfile: Dockerfile
+    container_name: front-despacho-app
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - ventas-backend
+      - despachos-backend
+
+volumes:
+  db-data:
