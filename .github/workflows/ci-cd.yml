@@ -1,66 +1,66 @@
-name: CI/CD
-
-on:
-  push:
-    branches: [ main ]
-
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-
-jobs:
-  build-test-push:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - name: frontend
-            context: ./front-despacho
-            repo: examendevops/frontend
-          - name: ventas-backend
-            context: ./back-ventas-springboot/api-rest-ventas
-            repo: examendevops/ventas-backend
-          - name: despachos-backend
-            context: ./back-bespachos-springboot/api-rest-despacho
-            repo: examendevops/despachos-backend
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configurar credenciales AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login en ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build y push imagen (${{ matrix.name }})
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-        run: |
-          docker build -t $REGISTRY/${{ matrix.repo }}:$IMAGE_TAG ${{ matrix.context }}
-          docker tag $REGISTRY/${{ matrix.repo }}:$IMAGE_TAG $REGISTRY/${{ matrix.repo }}:latest
-          docker push $REGISTRY/${{ matrix.repo }}:$IMAGE_TAG
-          docker push $REGISTRY/${{ matrix.repo }}:latest
-
-  deploy:
-    needs: build-test-push
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configurar credenciales AWS
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Forzar nuevo despliegue en ECS
-        run: |
-          aws ecs update-service --cluster examendevops-cluster2 --service frontend-service --force-new-deployment
+name: CI/CD 
+ 
+on: 
+  push: 
+    branches: [ main ] 
+ 
+env: 
+  AWS_REGION: ${{ secrets.AWS_REGION }} 
+ 
+jobs: 
+  build-test-push: 
+    runs-on: ubuntu-latest 
+    strategy: 
+      matrix: 
+        include: 
+          - name: frontend 
+            context: ./front-despacho 
+            repo: examendevops/frontend 
+          - name: ventas-backend 
+            context: ./back-ventas-springboot/api-rest-ventas 
+            repo: examendevops/ventas-backend 
+          - name: despachos-backend 
+            context: ./back-bespachos-springboot/api-rest-despacho 
+            repo: examendevops/despachos-backend 
+    steps: 
+      - uses: actions/checkout@v4 
+ 
+      - name: Configurar credenciales AWS 
+        uses: aws-actions/configure-aws-credentials@v4 
+        with: 
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} 
+          aws-region: ${{ env.AWS_REGION }} 
+ 
+      - name: Login en ECR 
+        id: login-ecr 
+        uses: aws-actions/amazon-ecr-login@v2 
+ 
+      - name: Build y push imagen (${{ matrix.name }}) 
+        env: 
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }} 
+          IMAGE_TAG: ${{ github.sha }} 
+        run: | 
+          docker build -t $REGISTRY/${{ matrix.repo }}:$IMAGE_TAG ${{ matrix.context }} 
+          docker tag $REGISTRY/${{ matrix.repo }}:$IMAGE_TAG $REGISTRY/${{ matrix.repo }}:latest 
+          docker push $REGISTRY/${{ matrix.repo }}:$IMAGE_TAG 
+          docker push $REGISTRY/${{ matrix.repo }}:latest 
+ 
+  deploy: 
+    needs: build-test-push 
+    runs-on: ubuntu-latest 
+    steps: 
+      - uses: actions/checkout@v4 
+ 
+      - name: Configurar credenciales AWS 
+        uses: aws-actions/configure-aws-credentials@v4 
+        with: 
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} 
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} 
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} 
+          aws-region: ${{ env.AWS_REGION }} 
+ 
+      - name: Forzar nuevo despliegue en ECS 
+        run: | 
+          aws ecs update-service --cluster examendevops-cluster2 --service frontend-service --force-new-deployment 
