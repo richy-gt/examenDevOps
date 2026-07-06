@@ -64,5 +64,3 @@ jobs:
       - name: Forzar nuevo despliegue en ECS
         run: |
           aws ecs update-service --cluster examendevops-cluster2 --service frontend-service --force-new-deployment
-          aws ecs update-service --cluster examendevops-cluster2 --service ventas-service --force-new-deployment
-          aws ecs update-service --cluster examendevops-cluster2 --service despachos-service --force-new-deployment
