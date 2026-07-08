@@ -1,0 +1,22 @@
+{
+  "cluster": "examendevops-cluster",
+  "serviceName": "despachos-service",
+  "taskDefinition": "despachos-task",
+  "desiredCount": 1,
+  "launchType": "FARGATE",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": ["subnet-0c166b7b95bd8faae", "subnet-03786c933fde7f6d2"],
+      "securityGroups": ["sg-057eef6c06a6310cc"],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100,
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    }
+  }
+}

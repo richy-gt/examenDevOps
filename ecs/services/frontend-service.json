@@ -1,0 +1,29 @@
+{
+  "cluster": "examendevops-cluster",
+  "serviceName": "frontend-service",
+  "taskDefinition": "frontend-task",
+  "desiredCount": 1,
+  "launchType": "FARGATE",
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "subnets": ["subnet-0c166b7b95bd8faae", "subnet-03786c933fde7f6d2"],
+      "securityGroups": ["sg-0d8b487c020614b62"],
+      "assignPublicIp": "ENABLED"
+    }
+  },
+  "loadBalancers": [
+    {
+      "targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:885941162978:targetgroup/examendevops-frontend-tg/395dff887c722c11",
+      "containerName": "frontend",
+      "containerPort": 80
+    }
+  ],
+  "deploymentConfiguration": {
+    "maximumPercent": 200,
+    "minimumHealthyPercent": 100,
+    "deploymentCircuitBreaker": {
+      "enable": true,
+      "rollback": true
+    }
+  }
+}

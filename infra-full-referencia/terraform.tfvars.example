@@ -1,0 +1,15 @@
+# Copia este archivo como terraform.tfvars y completa con tus valores reales.
+# NUNCA subas terraform.tfvars con credenciales reales al repositorio publico.
+
+aws_region        = "us-east-1"
+aws_access_key    = "PEGA_AQUI_TU_ACCESS_KEY_DE_AWS_ACADEMY"
+aws_secret_key    = "PEGA_AQUI_TU_SECRET_KEY_DE_AWS_ACADEMY"
+aws_session_token = "PEGA_AQUI_TU_SESSION_TOKEN_DE_AWS_ACADEMY"
+
+# ARN del rol LabRole de tu cuenta (Consola AWS -> IAM -> Roles -> LabRole)
+lab_role_arn = "arn:aws:iam::TU_CUENTA:role/LabRole"
+
+db_username = "db_user"
+db_password = "CAMBIA_ESTA_PASSWORD"
+
+project_name = "examendevops"

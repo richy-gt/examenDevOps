@@ -1,0 +1,38 @@
+{
+  "family": "despachos-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "executionRoleArn": "arn:aws:iam::885941162978:role/LabRole",
+  "taskRoleArn": "arn:aws:iam::885941162978:role/LabRole",
+  "containerDefinitions": [
+    {
+      "name": "despachos-backend",
+      "image": "885941162978.dkr.ecr.us-east-1.amazonaws.com/examendevops/despachos-backend:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8081,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "DB_ENDPOINT", "value": "examendevops-db.ctvmm8nnc93u.us-east-1.rds.amazonaws.com" },
+        { "name": "DB_PORT", "value": "3306" },
+        { "name": "DB_NAME", "value": "despachos_db" },
+        { "name": "DB_USERNAME", "value": "db_user" },
+        { "name": "DB_PASSWORD", "value": "Contrasegura321" }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/despachos-service",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true"
+        }
+      }
+    }
+  ]
+}

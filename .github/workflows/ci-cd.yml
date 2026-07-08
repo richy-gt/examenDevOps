@@ -61,6 +61,8 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }} 
           aws-region: ${{ env.AWS_REGION }} 
  
-      - name: Forzar nuevo despliegue en ECS 
-        run: | 
-          aws ecs update-service --cluster examendevops-cluster2 --service frontend-service --force-new-deployment 
+      - name: Forzar nuevo despliegue en ECS
+        run: |
+          for SERVICE in frontend-service ventas-service despachos-service; do
+            aws ecs update-service --cluster examendevops-cluster --service $SERVICE --force-new-deployment
+          done
